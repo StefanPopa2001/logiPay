@@ -10,6 +10,7 @@
     <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@2.3.2/dist/purify.min.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
 </head>
 
 <script>
@@ -187,19 +188,42 @@
 </div>
 
 <div id="printSpace">
-    <div>///</div>
+    <span class="container"><img src="../images/logo_logiscool.png" class="payLogiscoolLogo"></img></span>
     <div>FICHE DE DÉFRAIEMENT - VOLONTARIAT</div>
     <div>MOIS DE : </div>
-    <div>Nom et prénom du volontaire : </div>
-    <div>Compte bancaire n° :s </div>
+    <div>Nom et prénom du volontaire : </div> <input type="text"></input>
+    <div>Compte bancaire n° :s </div><input type="text"></input>
     <div>///</div>
     <div>Date et signature</div>
     <div>06-04-2023</div>
-    <div>///</div>
+    <div id="signature-pad">
+        <canvas></canvas>
+    </div>
+    <button id="clear-btn">Clear</button>
+    <button id="save-btn">Save</button>
 </div>
 
 </body>
+<script>
+    const canvas = document.querySelector('canvas');
+    const signaturePad = new SignaturePad(canvas);
+    const clearButton = document.getElementById('clear-btn');
+    const saveButton = document.getElementById('save-btn');
 
+    clearButton.addEventListener('click', () => {
+        signaturePad.clear();
+    });
+
+    saveButton.addEventListener('click', () => {
+        if (signaturePad.isEmpty()) {
+            alert('Please provide a signature first.');
+        } else {
+            const signatureData = signaturePad.toDataURL();
+            // Do something with the signature data, such as send it to a server or save it to local storage.
+            console.log(signatureData);
+        }
+    });
+</script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("printPDFButtonSimple").addEventListener("click", function () {

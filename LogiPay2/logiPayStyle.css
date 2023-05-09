@@ -133,3 +133,15 @@ body{
     height: 11.69in;
     background-color: green;
 }
+
+.container{
+    border: black solid 1px;
+    margin: auto;
+    display: flex;
+}
+
+.payLogiscoolLogo{
+    width: 50%;
+    margin: auto;
+
+}
