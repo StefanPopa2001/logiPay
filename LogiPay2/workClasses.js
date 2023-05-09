@@ -7,12 +7,17 @@ function generateId(){
 
 class Teacher{
 
-    generateWork()
-    {
-        return []
+    prepaPay; 
+    coursPay;
+
+    generateWork() {
+        let worksToReturn = []
+        const workPrepaCours = new Work("preparation", "Préparation de cours", this.prepaPay)
+        const workCours = new Work("cours", "Cours",this.coursPay)
+        worksToReturn.push(workPrepaCours)
+        worksToReturn.push(workCours)
+        return worksToReturn
     }
-
-
 
     constructor() {}
 }
@@ -22,93 +27,48 @@ class JuniorTeacher extends Teacher{
     prepaPay = 7.30
     coursPay = 17.70
 
-    generateWork() {
-        let worksToReturn = []
-        const workPrepaCours = new Work("preparation", "Préparation de cours", this.prepaPay)
-        const workCours = new Work("cours", "Cours",this.coursPay)
-        worksToReturn.push(workPrepaCours)
-        worksToReturn.push(workCours)
-        return worksToReturn
-    }
 }
 
 class MediorTeacher extends Teacher{
 
-    prepaPay = 8.55
+    prepaPay = 9.80
     coursPay = 17.70
 
-    generateWork() {
-        let worksToReturn = []
-        const workPrepaCours = new Work("preparation", "Préparation de cours", this.prepaPay)
-        const workCours = new Work("cours", "Cours",this.coursPay)
-        worksToReturn.push(workPrepaCours)
-        worksToReturn.push(workCours)
-        return worksToReturn
-    }
 }
 
 class SeniorTeacher extends Teacher{
 
-    prepaPay = 9.80
+    prepaPay = 12.30
     coursPay = 17.70
 
-    generateWork() {
-        let worksToReturn = []
-        const workPrepaCours = new Work("preparation", "Préparation de cours", this.prepaPay)
-        const workCours = new Work("cours", "Cours",this.coursPay)
-        worksToReturn.push(workPrepaCours)
-        worksToReturn.push(workCours)
-        return worksToReturn
-    }
 }
 
 class Accueil{
 
-    generateWork(){
-        return [];
+    generateWork() {
+        let worksToReturn = []
+        const workAccueil = new Work("accueil", "Gestion de l'accueil", this.hourlyPay)
+        worksToReturn.push(workAccueil)
+        return worksToReturn
     }
 
-    constructor()
-    {
-
-    }
+    constructor(){}
 }
 
 class JuniorAccueil extends Accueil{
 
     hourlyPay = 10
-
-    generateWork() {
-        let worksToReturn = []
-        const workAccueil = new Work("accueil", "Gestion de l'accueil", this.hourlyPay)
-        worksToReturn.push(workAccueil)
-        return worksToReturn
-    }
 }
 
 class MediorAccueil extends Accueil{
 
     hourlyPay = 11
-
-    generateWork() {
-        let worksToReturn = []
-        const workAccueil = new Work("accueil", "Gestion de l'accueil", this.hourlyPay)
-        worksToReturn.push(workAccueil)
-        return worksToReturn
-    }
 }
 
 
 class SeniorAccueil extends Accueil{
 
     hourlyPay = 12.10
-
-    generateWork() {
-        let worksToReturn = []
-        const workAccueil = new Work("accueil", "Gestion de l'accueil", this.hourlyPay)
-        worksToReturn.push(workAccueil)
-        return worksToReturn
-    }
 }
 
 class Work{
@@ -126,8 +86,8 @@ class Work{
     }
 }
 
-const dailyPayLimit = 35.41;
-const yearlyPayLimit = 1416.16;
+const dailyPayLimit = 40.67;
+const yearlyPayLimit =  1626.77;
 workedDaysArray = [];
 
 //Util
@@ -191,7 +151,7 @@ class workDay{
     }
 
 
-    returnNextDay() {
+    returnNextDay() {    
         const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
         let currentDate = new Date(this.year, monthNames.indexOf(this.month), this.dayNumber);
         let nextDate = new Date(currentDate.getTime() + 86400000); // Add 1 day in milliseconds
