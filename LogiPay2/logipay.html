@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LogiPay v0.2</title>
+    <link rel="stylesheet" type="text/css" href="logiPayStyle.css">
+    <script type="text/javascript" src="calendar.js"></script>
+    <script type="text/javascript" src="workClasses.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.3.2/dist/purify.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+
+<script>
+    var jsPDF;
+    window.onload = function() {
+        jsPDF = window.jspdf.jsPDF;
+    };
+
+    function printDivAsPdf() {
+        var doc = new jsPDF('p', 'pt', 'a4');
+        var content = document.getElementById("printSpace");
+
+        html2canvas(content, {
+            onclone: function (clonedDoc) {
+                // Set the cloned document's height to be the same as the content height
+                clonedDoc.documentElement.style.height = content.offsetHeight + 'px';
+            }
+        }).then(function (canvas) {
+            // Calculate the width and height of the PDF based on the content dimensions and DPI
+            var contentWidth = canvas.width;
+            var contentHeight = canvas.height;
+            var pdfWidth = doc.internal.pageSize.getWidth();
+            var pdfHeight = doc.internal.pageSize.getHeight();
+            var scale = Math.min(pdfWidth / contentWidth, pdfHeight / contentHeight);
+            var xOffset = (pdfWidth - contentWidth * scale) / 2;
+            var yOffset = (pdfHeight - contentHeight * scale) / 2;
+
+            // Add the canvas to the PDF and save it
+            doc.addImage(canvas, 'PNG', xOffset, yOffset, contentWidth * scale, contentHeight * scale);
+            doc.save("Défraiement test.pdf");
+        });
+    }
+
+</script>
+
+<header class="logiPayHeader">
+
+    <script type="text/javascript">
+
+
+
+        //Display all the days
+        async function displayWorkedDaysRecap(){
+
+            await spreadWork()
+
+            stats = {
+                preparations : 0,
+                cours: 0,
+                accueil : 0,
+                total : 0,
+            }
+
+            const workedDaysDiv = document.getElementById("workedDaysList");
+            workedDaysDiv.innerHTML = "";
+
+            workedDaysArray.forEach(dayOfWork => {
+
+                const dayDiv = document.createElement("div");
+                dayDiv.innerText = `${dayOfWork.dayName} ${dayOfWork.dayNumber} ${dayOfWork.month}`;
+                workedDaysDiv.appendChild(dayDiv)
+                dayDiv.classList.add("workedDayDiv")
+                dayOfWork.workArray.forEach(work => {
+                    const workDiv = document.createElement("div");
+                    workDiv.classList.add("workEntryDiv")
+                    workDiv.innerText = `${work.description} (${work.pay}€)`;
+                    dayDiv.appendChild(workDiv)
+
+                    if (work.type == "cours")
+                    {
+                        stats.cours++
+                    }
+                    else if(work.type == "accueil")
+                    {
+                        stats.accueil++
+                    }
+                    else if(work.type == "preparation")
+                    {
+                        stats.preparations++
+                    }
+
+                    stats.total += work.pay
+
+
+
+                })
+
+            })
+
+            recapDivToAppend = document.getElementById("recapDiv")
+            recapDivToAppend.innerText = ""
+            recapDiv = document.createElement("div");
+            recapDiv.classList.add("recapDiv")
+            recapDiv.innerText = "Heures d'Accueil : "+stats.accueil + " Nombre de Cours : "+stats.cours+" Nombre de Preparations : "+stats.preparations+" Défraiement total : "+stats.total+"€"
+            recapDivToAppend.append(recapDiv)
+
+        }
+
+
+
+
+
+    </script>
+
+
+    <h1 class="pageTitle">LogiPay</h1>
+    <h1 class="pageSubTitle">Le service de facturation de logsicool Mons</h1>
+
+
+</header>
+
+<div id="settings">
+
+    <label for="monthDropDown">Sélectionnez un mois:</label>
+    <select class="form-select" id="monthDropDown" name="mois">
+        <option selected disabled>Choisissez un mois</option>
+        <option value="1">Janvier</option>
+        <option value="2">Février</option>
+        <option value="3">Mars</option>
+        <option value="4">Avril</option>
+        <option value="5">Mai</option>
+        <option value="6">Juin</option>
+        <option value="7">Juillet</option>
+        <option value="8">Août</option>
+        <option value="9">Septembre</option>
+        <option value="10">Octobre</option>
+        <option value="11">Novembre</option>
+        <option value="12">Décembre</option>
+    </select>
+
+    <br>
+    <br>
+    <br>
+
+    <label for="functionDropDown">Fonction:</label>
+    <select class="form-select" id="functionDropDown" name="menu">
+        <option selected disabled value="0">Choisissez une option</option>
+        <option value="professeur">Professeur</option>
+        <option value="accueil">Accueil</option>
+    </select>
+
+    <label for="levelDropDown">Niveau:</label>
+    <select class="form-select" id="levelDropDown" name="niveau">
+        <option selected disabled value="0">Choisissez un niveau</option>
+        <option value="junior">Junior</option>
+        <option value="medior">Médior</option>
+        <option value="senior">Senior</option>
+    </select>
+
+
+
+
+</div>
+
+<div id="calendar"></div>
+
+<body>
+
+<div id="workedDaysList">
+    <h2>Récapitulatif</h2>
+</div>
+
+<div id="recapDiv">
+</div>
+
+<div id="printButtonSelection">
+    <h2>Impression PDF</h2>
+    <button id="printPDFButtonSimple" class="btn btn-outline-secondary">
+        Imprimer le total
+    </button>
+
+    <button id="printPDFButtonFull" class="btn btn-outline-secondary">
+        Imprimer le détails
+    </button>
+</div>
+
+<div id="printSpace">
+    <div>///</div>
+    <div>FICHE DE DÉFRAIEMENT - VOLONTARIAT</div>
+    <div>MOIS DE : </div>
+    <div>Nom et prénom du volontaire : </div>
+    <div>Compte bancaire n° :s </div>
+    <div>///</div>
+    <div>Date et signature</div>
+    <div>06-04-2023</div>
+    <div>///</div>
+</div>
+
+</body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("printPDFButtonSimple").addEventListener("click", function () {
+            const pf = document.getElementById("printSpace")
+            pf.className = "A4"
+            printDivAsPdf()
+        })
+    })
+</script>
+
+</html>
+

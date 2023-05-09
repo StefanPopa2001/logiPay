@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "@babel/core": "^7.21.8",
+    "@babel/preset-env": "^7.21.5",
+    "@babel/runtime": "^7.21.5",
+    "http-server": "^14.1.1",
+    "npx": "^10.2.2"
+  },
+  "name": "logipay2",
+  "version": "1.0.0",
+  "main": "calendar.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "babel-cli": "^6.26.0"
+  }
+}

@@ -1,0 +1,135 @@
+body{
+    width: 100vw;
+}
+
+.pageTitle{
+    text-align: center;
+    font-size: 5em;
+
+}
+
+.calendarHeader{
+    text-align: center;
+    font-size: 2em;
+}
+
+.pageSubTitle{
+    text-align: center;
+    font-size: 1.5em;
+
+}
+
+
+.logiPayHeader{
+    background-color: white;
+    padding-bottom: 25px;
+}
+
+.selectableCalendarDay{
+    cursor: pointer;
+}
+
+.dayCard{
+    background-color:gray;
+    text-align: center;
+    margin: 5px;
+    padding: 5px;
+}
+
+.workCard{
+    background-color:aquamarine;
+    margin: 2px;
+    border: solid 1px black;
+}
+
+#settings{
+    max-width: 90%;
+    margin-left: 5%;
+    text-align: center;
+}
+
+
+.calendarDayHeader{
+    background-color: darkgrey;
+    text-align: center;
+    margin: 5px;
+    padding: 5px;
+    font-weight: bold;
+    width: 12.86%;
+}
+
+
+.calendarDayHeaderDimanche{
+    background-color: #c77b7b;
+}
+
+.calendarDayHoliday{
+    background-color: #d58787;
+    font-weight: bolder;
+}
+
+.calendarDayEmpty{
+    background-color: #727272;
+}
+
+.calendarDay{
+    background-color: #c9c9c9;
+    cursor: pointer;
+}
+
+.calendarDay:hover{
+    background-color: white;
+}
+
+.calendarDay:active {
+    background-color: darkgrey;
+}
+
+#calendar{
+    user-select: none; /* Standard syntax */
+    padding: 2px;
+    max-width: 90%;
+    margin-left: 5%;
+
+    border-radius: 10px;
+}
+
+#workedDaysList {
+
+    border-radius: 10px;
+    text-align: center;
+    max-width: 90%;
+    margin-left: 5%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#printButtonSelection{
+    text-align: center;
+}
+
+.workedDayDiv {
+    background-color: white;
+    margin: 2px;
+    border: solid 1px black;
+    width: calc(25% - 10px); /* Adjust this value as needed */
+    box-sizing: border-box;
+}
+
+.workEntryDiv{
+    background-color: #c9c9c9;
+    margin: 2px;
+    border: solid 1px black;
+}
+
+.recapDiv{
+    background-color: white;
+    text-align: center;
+}
+
+.A4 {
+    width: 8.27in;
+    height: 11.69in;
+    background-color: green;
+}
