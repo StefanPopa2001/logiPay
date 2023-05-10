@@ -73,31 +73,62 @@
                 dayDiv.innerText = `${dayOfWork.dayName} ${dayOfWork.dayNumber} ${dayOfWork.month}`;
                 workedDaysDiv.appendChild(dayDiv)
                 dayDiv.classList.add("workedDayDiv")
-                dayOfWork.workArray.forEach(work => {
+
+                dayOfWork.workArray.forEach((work, index) => {
+
+                    console.log(dayOfWork);
+
                     const workDiv = document.createElement("div");
                     workDiv.classList.add("workEntryDiv")
                     workDiv.innerText = `${work.description} (${work.pay}€)`;
                     dayDiv.appendChild(workDiv)
 
-                    if (work.type == "cours")
-                    {
-                        stats.cours++
+                    let deleted = false;
+                    //delete button
+                    const deleteButton = document.createElement("button");
+                    deleteButton.innerText = "X";
+                    deleteButton.classList.add("deleteButton");
+                    workDiv.appendChild(deleteButton);
+
+                    //remove work day
+                    deleteButton.addEventListener("click", () => {
+
+                        //dayOfWork.workArray.splice(index, 1);
+
+                        dayOfWork.workArray.splice(index);
+                        deleted = true;
+
+                        workDiv.remove();
+
+                        if (work.type == "cours") {
+                            stats.cours--;
+                        } else if (work.type == "accueil") {
+                            stats.accueil--;
+                        } else if (work.type == "preparation") {
+                            stats.preparations--;
+                        }
+                        stats.total -= work.pay;
+                        recapDivText();
+
+                    });
+
+                    if (!deleted) {
+                        //add work day
+                        if (work.type == "cours") {
+                            stats.cours++
+                        }
+
+                        else if (work.type == "accueil") {
+                            stats.accueil++
+                        }
+                        else if (work.type == "preparation") {
+                            stats.preparations++
+                        }
+
+                        stats.total += work.pay
                     }
-                    else if(work.type == "accueil")
-                    {
-                        stats.accueil++
-                    }
-                    else if(work.type == "preparation")
-                    {
-                        stats.preparations++
-                    }
-
-                    stats.total += work.pay
-
-
-
+                    recapDivText();
                 })
-
             })
 
             recapDivToAppend = document.getElementById("recapDiv")
@@ -293,6 +324,18 @@
 
 </body>
 <script>
+
+    function recapDivText()
+    {
+
+        recapDivToAppend = document.getElementById("recapDiv")
+        recapDivToAppend.innerText = ""
+        recapDiv = document.createElement("div");
+        recapDiv.classList.add("recapDiv")
+        recapDiv.innerText = "Heures d'Accueil : " + stats.accueil + " Nombre de Cours : " + stats.cours + " Nombre de Preparations : " + stats.preparations + " Défraiement total : " + stats.total + "€"
+        recapDivToAppend.append(recapDiv)
+    }
+
     const canvas = document.querySelector('canvas');
     const signaturePad = new SignaturePad(canvas);
     const clearButton = document.getElementById('clear-btn');
