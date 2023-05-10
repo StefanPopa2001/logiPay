@@ -107,6 +107,87 @@
             recapDiv.innerText = "Heures d'Accueil : "+stats.accueil + " Nombre de Cours : "+stats.cours+" Nombre de Preparations : "+stats.preparations+" Défraiement total : "+stats.total+"€"
             recapDivToAppend.append(recapDiv)
 
+
+            payGrid= document.getElementById("defraiementPayGrid")
+            payGrid.innerHTML =""
+
+            const table = document.createElement('table');
+            const headerRow = document.createElement('tr');
+            const headers = ['DATE', 'OBJET', 'DEFRAIMENT', 'NOMBRE', 'TOTAL'];
+
+            for (let header of headers) {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            }
+            table.appendChild(headerRow);
+
+            let totalWorkCount = 0;
+            let totalWorkPay = 0;
+
+            for (let workDay of workedDaysArray) {
+                let workCount = {};
+                let workPayTotal = {};
+
+                workDay.workArray.forEach(work=>{
+                    if(work.description in workCount){
+                        workCount[work.description]++;
+                        workPayTotal[work.description] += work.pay;
+                    }
+                    else{
+                        workCount[work.description] = 1;
+                        workPayTotal[work.description] = work.pay;
+                    }
+                });
+
+                for(let workDescription in workCount){
+                    const row = document.createElement('tr');
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = workDay.dayNumber+"/"+workDay.month+"/"+workDay.year;
+                    row.appendChild(dateCell);
+
+                    const objectCell = document.createElement('td');
+                    objectCell.textContent = workDescription;
+                    row.appendChild(objectCell);
+
+                    const defraimentCell = document.createElement('td');
+                    defraimentCell.textContent = workPayTotal[workDescription];
+                    row.appendChild(defraimentCell);
+
+                    const nombreCell = document.createElement('td');
+                    nombreCell.textContent = workCount[workDescription];
+                    row.appendChild(nombreCell);
+
+                    const totalCell = document.createElement('td');
+                    totalCell.textContent = workPayTotal[workDescription];
+                    row.appendChild(totalCell);
+
+                    totalWorkCount += workCount[workDescription];
+                    totalWorkPay += workPayTotal[workDescription];
+
+                    table.appendChild(row);
+                }
+            }
+
+            // Add a final row with the totals
+            const totalRow = document.createElement('tr');
+            totalRow.appendChild(document.createElement('td')); // Empty cell
+            totalRow.appendChild(document.createElement('td')); // Empty cell
+            totalRow.appendChild(document.createElement('td')); // Empty cell
+
+
+            const totalNombreCell = document.createElement('td');
+            totalNombreCell.textContent = totalWorkCount;
+            totalRow.appendChild(totalNombreCell);
+
+            const grandTotalCell = document.createElement('td');
+            grandTotalCell.textContent = totalWorkPay;
+            totalRow.appendChild(grandTotalCell);
+
+            table.appendChild(totalRow);
+
+
+            payGrid.appendChild(table)
         }
 
 
@@ -189,18 +270,25 @@
 
 <div id="printSpace">
     <span class="container"><img src="../images/logo_logiscool.png" class="payLogiscoolLogo"></img></span>
-    <div>FICHE DE DÉFRAIEMENT - VOLONTARIAT</div>
-    <div>MOIS DE : </div>
-    <div>Nom et prénom du volontaire : </div> <input type="text"></input>
-    <div>Compte bancaire n° :s </div><input type="text"></input>
-    <div>///</div>
-    <div>Date et signature</div>
-    <div>06-04-2023</div>
-    <div id="signature-pad">
-        <canvas></canvas>
+    <div class="centered" id="defraiementTitre">FICHE DE DÉFRAIEMENT - VOLONTARIAT</div>
+    <div class="centered" id="defraiementMois">MOIS DE : <span id="defraiementMonthName"></span></div>
+    <div class="defraiementMarginLeft">Nom et prénom du volontaire :<input type="text"> </div>
+    <div class="defraiementMarginLeft">Compte bancaire n° : <input type="text"></div>
+
+    <div id="defraiementPayGrid" class="defraiementMarginLeft">
+
+    </div>
+
+    <div class="defraimentSignSpace">
+    <div class="">Date et signature:</div>
+    <div class="" id="defraiementSignatureDate">06-04-2023</div>
+    <div class="" id="signature-pad">
+        <canvas id="signCanvas"></canvas>
     </div>
     <button id="clear-btn">Clear</button>
     <button id="save-btn">Save</button>
+    </div>
+
 </div>
 
 </body>
@@ -223,16 +311,20 @@
             console.log(signatureData);
         }
     });
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
+
+
         document.getElementById("printPDFButtonSimple").addEventListener("click", function () {
             const pf = document.getElementById("printSpace")
             pf.className = "A4"
             printDivAsPdf()
         })
-    })
+
+
+
+
+
 </script>
+
 
 </html>
 

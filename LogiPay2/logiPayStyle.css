@@ -2,6 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    border: black 1px solid;
   }
 
 body{
@@ -29,6 +30,8 @@ body{
 .logiPayHeader{
     background-color: white;
     padding-bottom: 25px;
+    max-width: 90%;
+    margin-left: 5%;
 }
 
 .selectableCalendarDay{
@@ -59,6 +62,8 @@ body{
 {
     max-width: 90%;
     margin-left: 5%;
+    width: 8.27in;
+    height: 11.69in;
 }
 
 .calendarDayHeader{
@@ -102,8 +107,6 @@ body{
     padding: 2px;
     max-width: 90%;
     margin-left: 5%;
-
-    border-radius: 10px;
 }
 
 #workedDaysList {
@@ -117,8 +120,15 @@ body{
     justify-content: center;
 }
 
+#recapDiv{
+    max-width: 90%;
+    margin-left: 5%;
+}
+
 #printButtonSelection{
     text-align: center;
+    max-width: 90%;
+    margin-left: 5%;
 }
 
 .workedDayDiv {
@@ -141,8 +151,7 @@ body{
 }
 
 .A4 {
-    width: 8.27in;
-    height: 11.69in;
+
     background-color: green;
 
 }
@@ -156,5 +165,48 @@ body{
 .payLogiscoolLogo{
     width: 50%;
     margin: auto;
+}
 
+.centered{
+    text-align: center;
+}
+
+#defraiementTitre{
+    font-size: 28px;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+#defraiementMois{
+    margin-top: 15px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.defraiementMarginLeft{
+margin-left: 30px;
+    margin-top: 10px;
+    align-content: center;
+}
+
+#defraiementPayGrid{
+    display: flex;
+}
+
+.defraimentSignSpace
+{
+
+    margin-left: 30px;
+    margin-top: 10px;
+
+}
+
+#signCanvas{
+    background-color: white;
+
+}
+
+.invalid
+{
+    border: red 5px dashed;
 }

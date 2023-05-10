@@ -27,9 +27,14 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     renderCalendar(date.getMonth(), year, weekdays, months);
+
+
+
 });
 
 function renderCalendar(month, year, weekdays, months) {
+    document.getElementById("defraiementMonthName").innerText = months[parseInt(monthDropDown.value) - 1];
+    document.getElementById("defraiementSignatureDate").innerText = new Date().toLocaleDateString("fr-FR");
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const firstDayOfWeek = new Date(year, month, 1).getDay() - 1;
     const startingDays = firstDayOfWeek < 0 ? 6 : firstDayOfWeek;
