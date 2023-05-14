@@ -7,7 +7,7 @@ function generateId(){
 
 class Teacher{
 
-    prepaPay; 
+    prepaPay;
     coursPay;
 
     generateWork() {
@@ -151,7 +151,7 @@ class workDay{
     }
 
 
-    returnNextDay() {    
+    returnNextDay() {
         const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
         let currentDate = new Date(this.year, monthNames.indexOf(this.month), this.dayNumber);
         let nextDate = new Date(currentDate.getTime() + 86400000); // Add 1 day in milliseconds
@@ -297,4 +297,176 @@ function addWork()
 
     console.log(`Generated work : `+JSON.stringify(functionWorked.generateWork()))
     return functionWorked.generateWork();
+}
+
+
+
+//Display all the days
+async function displayWorkedDaysRecap(){
+
+    await spreadWork()
+
+    stats = {
+        preparations : 0,
+        cours: 0,
+        accueil : 0,
+        total : 0,
+    }
+
+    const workedDaysDiv = document.getElementById("workedDaysList");
+    workedDaysDiv.innerHTML = "";
+
+    workedDaysArray.forEach(dayOfWork => {
+
+        const dayDiv = document.createElement("div");
+        dayDiv.innerText = `${dayOfWork.dayName} ${dayOfWork.dayNumber} ${dayOfWork.month}`;
+        workedDaysDiv.appendChild(dayDiv)
+        dayDiv.classList.add("workedDayDiv")
+
+        dayOfWork.workArray.forEach((work, index) => {
+
+            console.log(dayOfWork);
+
+            const workDiv = document.createElement("div");
+            workDiv.classList.add("workEntryDiv")
+            workDiv.innerText = `${work.description} (${work.pay}€)`;
+            dayDiv.appendChild(workDiv)
+
+            let deleted = false;
+            //delete button
+            const deleteButton = document.createElement("button");
+            deleteButton.innerText = "X";
+            deleteButton.classList.add("deleteButton");
+            workDiv.appendChild(deleteButton);
+
+            //remove work day
+            deleteButton.addEventListener("click", () => {
+
+                //dayOfWork.workArray.splice(index, 1);
+
+                dayOfWork.workArray.splice(index);
+                deleted = true;
+
+                workDiv.remove();
+
+                if (work.type == "cours") {
+                    stats.cours--;
+                } else if (work.type == "accueil") {
+                    stats.accueil--;
+                } else if (work.type == "preparation") {
+                    stats.preparations--;
+                }
+                stats.total -= work.pay;
+                recapDivText();
+
+            });
+
+            if (!deleted) {
+                //add work day
+                if (work.type == "cours") {
+                    stats.cours++
+                }
+
+                else if (work.type == "accueil") {
+                    stats.accueil++
+                }
+                else if (work.type == "preparation") {
+                    stats.preparations++
+                }
+
+                stats.total += work.pay
+            }
+            recapDivText();
+        })
+    })
+
+    recapDivToAppend = document.getElementById("recapDiv")
+    recapDivToAppend.innerText = ""
+    recapDiv = document.createElement("div");
+    recapDiv.classList.add("recapDiv")
+    recapDiv.innerText = "Heures d'Accueil : "+stats.accueil + " Nombre de Cours : "+stats.cours+" Nombre de Preparations : "+stats.preparations+" Défraiement total : "+Math.round(stats.total)+"€"
+    recapDivToAppend.append(recapDiv)
+
+
+    payGrid= document.getElementById("defraiementPayGrid")
+    payGrid.innerHTML =""
+
+    const table = document.createElement('table');
+    table.className="table"
+    const headerRow = document.createElement('tr');
+    const headers = ['DATE', 'OBJET', 'DEFRAIMENT', 'NOMBRE', 'TOTAL'];
+
+    for (let header of headers) {
+        const th = document.createElement('th');
+        th.textContent = header;
+        headerRow.appendChild(th);
+    }
+    table.appendChild(headerRow);
+
+    let totalWorkCount = 0;
+    let totalWorkPay = 0;
+
+    for (let workDay of workedDaysArray) {
+        let workCount = {};
+        let workPayTotal = {};
+
+        workDay.workArray.forEach(work=>{
+            if(work.description in workCount){
+                workCount[work.description]++;
+                workPayTotal[work.description] += work.pay;
+            }
+            else{
+                workCount[work.description] = 1;
+                workPayTotal[work.description] = work.pay;
+            }
+        });
+
+        for(let workDescription in workCount){
+            const row = document.createElement('tr');
+            const dateCell = document.createElement('td');
+            dateCell.textContent = workDay.dayNumber+" "+workDay.month+" "+workDay.year;
+            row.appendChild(dateCell);
+
+            const objectCell = document.createElement('td');
+            objectCell.textContent = workDescription;
+            row.appendChild(objectCell);
+
+            const defraimentCell = document.createElement('td');
+            defraimentCell.textContent = workPayTotal[workDescription];
+            row.appendChild(defraimentCell);
+
+            const nombreCell = document.createElement('td');
+            nombreCell.textContent = workCount[workDescription];
+            row.appendChild(nombreCell);
+
+            const totalCell = document.createElement('td');
+            totalCell.textContent = workPayTotal[workDescription];
+            row.appendChild(totalCell);
+
+            totalWorkCount += workCount[workDescription];
+            totalWorkPay += workPayTotal[workDescription];
+
+            table.appendChild(row);
+        }
+    }
+
+    // Add a final row with the totals
+    const totalRow = document.createElement('tr');
+    totalRow.appendChild(document.createElement('td')); // Empty cell
+    totalRow.appendChild(document.createElement('td')); // Empty cell
+    totalRow.appendChild(document.createElement('td')); // Empty cell
+
+
+    const totalNombreCell = document.createElement('td');
+    totalNombreCell.textContent = totalWorkCount;
+    totalRow.appendChild(totalNombreCell);
+
+    const grandTotalCell = document.createElement('td');
+    grandTotalCell.textContent = totalWorkPay.toFixed(2);
+    totalRow.appendChild(grandTotalCell);
+
+    table.appendChild(totalRow);
+
+
+    payGrid.appendChild(table)
 }

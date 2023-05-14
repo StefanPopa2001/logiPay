@@ -20,212 +20,39 @@
     };
 
     function printDivAsPdf() {
-        var doc = new jsPDF('p', 'pt', 'a4');
+        document.getElementById("clear-btn").style.display = "none"
+
+        document.getElementById("defraiementInputName").style.border = "none";
+        document.getElementById("defraiementInputBnk").style.border = "none";
+
+        var doc = new jsPDF('p', 'mm', 'a4');
         var content = document.getElementById("printSpace");
 
         html2canvas(content, {
+            scale: 5, // Increase scale factor for higher resolution
             onclone: function (clonedDoc) {
-                // Set the cloned document's height to be the same as the content height
                 clonedDoc.documentElement.style.height = content.offsetHeight + 'px';
             }
         }).then(function (canvas) {
-            // Calculate the width and height of the PDF based on the content dimensions and DPI
-            var contentWidth = canvas.width;
-            var contentHeight = canvas.height;
+            var imgData = canvas.toDataURL('image/jpeg', 1.0);
             var pdfWidth = doc.internal.pageSize.getWidth();
             var pdfHeight = doc.internal.pageSize.getHeight();
+            var contentWidth = canvas.width / 5; // Convert canvas width to mm
+            var contentHeight = canvas.height / 5; // Convert canvas height to mm
             var scale = Math.min(pdfWidth / contentWidth, pdfHeight / contentHeight);
             var xOffset = (pdfWidth - contentWidth * scale) / 2;
             var yOffset = (pdfHeight - contentHeight * scale) / 2;
 
-            // Add the canvas to the PDF and save it
-            doc.addImage(canvas, 'PNG', xOffset, yOffset, contentWidth * scale, contentHeight * scale);
-            doc.save("Défraiement test.pdf");
+            doc.addImage(imgData, 'JPEG', xOffset, yOffset, contentWidth * scale, contentHeight * scale, undefined, 'FAST');
+            doc.save("Défraiement "+ document.getElementById("defraiementInputName").value+" "+ document.getElementById("monthDropDown").innerText +".pdf");
         });
+
+        document.getElementById("clear-btn").style.display = "block"
     }
 
 </script>
 
 <header class="logiPayHeader">
-
-    <script type="text/javascript">
-
-
-
-        //Display all the days
-        async function displayWorkedDaysRecap(){
-
-            await spreadWork()
-
-            stats = {
-                preparations : 0,
-                cours: 0,
-                accueil : 0,
-                total : 0,
-            }
-
-            const workedDaysDiv = document.getElementById("workedDaysList");
-            workedDaysDiv.innerHTML = "";
-
-            workedDaysArray.forEach(dayOfWork => {
-
-                const dayDiv = document.createElement("div");
-                dayDiv.innerText = `${dayOfWork.dayName} ${dayOfWork.dayNumber} ${dayOfWork.month}`;
-                workedDaysDiv.appendChild(dayDiv)
-                dayDiv.classList.add("workedDayDiv")
-
-                dayOfWork.workArray.forEach((work, index) => {
-
-                    console.log(dayOfWork);
-
-                    const workDiv = document.createElement("div");
-                    workDiv.classList.add("workEntryDiv")
-                    workDiv.innerText = `${work.description} (${work.pay}€)`;
-                    dayDiv.appendChild(workDiv)
-
-                    let deleted = false;
-                    //delete button
-                    const deleteButton = document.createElement("button");
-                    deleteButton.innerText = "X";
-                    deleteButton.classList.add("deleteButton");
-                    workDiv.appendChild(deleteButton);
-
-                    //remove work day
-                    deleteButton.addEventListener("click", () => {
-
-                        //dayOfWork.workArray.splice(index, 1);
-
-                        dayOfWork.workArray.splice(index);
-                        deleted = true;
-
-                        workDiv.remove();
-
-                        if (work.type == "cours") {
-                            stats.cours--;
-                        } else if (work.type == "accueil") {
-                            stats.accueil--;
-                        } else if (work.type == "preparation") {
-                            stats.preparations--;
-                        }
-                        stats.total -= work.pay;
-                        recapDivText();
-
-                    });
-
-                    if (!deleted) {
-                        //add work day
-                        if (work.type == "cours") {
-                            stats.cours++
-                        }
-
-                        else if (work.type == "accueil") {
-                            stats.accueil++
-                        }
-                        else if (work.type == "preparation") {
-                            stats.preparations++
-                        }
-
-                        stats.total += work.pay
-                    }
-                    recapDivText();
-                })
-            })
-
-            recapDivToAppend = document.getElementById("recapDiv")
-            recapDivToAppend.innerText = ""
-            recapDiv = document.createElement("div");
-            recapDiv.classList.add("recapDiv")
-            recapDiv.innerText = "Heures d'Accueil : "+stats.accueil + " Nombre de Cours : "+stats.cours+" Nombre de Preparations : "+stats.preparations+" Défraiement total : "+stats.total+"€"
-            recapDivToAppend.append(recapDiv)
-
-
-            payGrid= document.getElementById("defraiementPayGrid")
-            payGrid.innerHTML =""
-
-            const table = document.createElement('table');
-            const headerRow = document.createElement('tr');
-            const headers = ['DATE', 'OBJET', 'DEFRAIMENT', 'NOMBRE', 'TOTAL'];
-
-            for (let header of headers) {
-                const th = document.createElement('th');
-                th.textContent = header;
-                headerRow.appendChild(th);
-            }
-            table.appendChild(headerRow);
-
-            let totalWorkCount = 0;
-            let totalWorkPay = 0;
-
-            for (let workDay of workedDaysArray) {
-                let workCount = {};
-                let workPayTotal = {};
-
-                workDay.workArray.forEach(work=>{
-                    if(work.description in workCount){
-                        workCount[work.description]++;
-                        workPayTotal[work.description] += work.pay;
-                    }
-                    else{
-                        workCount[work.description] = 1;
-                        workPayTotal[work.description] = work.pay;
-                    }
-                });
-
-                for(let workDescription in workCount){
-                    const row = document.createElement('tr');
-                    const dateCell = document.createElement('td');
-                    dateCell.textContent = workDay.dayNumber+"/"+workDay.month+"/"+workDay.year;
-                    row.appendChild(dateCell);
-
-                    const objectCell = document.createElement('td');
-                    objectCell.textContent = workDescription;
-                    row.appendChild(objectCell);
-
-                    const defraimentCell = document.createElement('td');
-                    defraimentCell.textContent = workPayTotal[workDescription];
-                    row.appendChild(defraimentCell);
-
-                    const nombreCell = document.createElement('td');
-                    nombreCell.textContent = workCount[workDescription];
-                    row.appendChild(nombreCell);
-
-                    const totalCell = document.createElement('td');
-                    totalCell.textContent = workPayTotal[workDescription];
-                    row.appendChild(totalCell);
-
-                    totalWorkCount += workCount[workDescription];
-                    totalWorkPay += workPayTotal[workDescription];
-
-                    table.appendChild(row);
-                }
-            }
-
-            // Add a final row with the totals
-            const totalRow = document.createElement('tr');
-            totalRow.appendChild(document.createElement('td')); // Empty cell
-            totalRow.appendChild(document.createElement('td')); // Empty cell
-            totalRow.appendChild(document.createElement('td')); // Empty cell
-
-
-            const totalNombreCell = document.createElement('td');
-            totalNombreCell.textContent = totalWorkCount;
-            totalRow.appendChild(totalNombreCell);
-
-            const grandTotalCell = document.createElement('td');
-            grandTotalCell.textContent = totalWorkPay;
-            totalRow.appendChild(grandTotalCell);
-
-            table.appendChild(totalRow);
-
-
-            payGrid.appendChild(table)
-        }
-
-
-
-
-
-    </script>
 
 
     <h1 class="pageTitle">LogiPay</h1>
@@ -238,7 +65,7 @@
 
     <label for="monthDropDown">Sélectionnez un mois:</label>
     <select class="form-select" id="monthDropDown" name="mois">
-        <option selected disabled>Choisissez un mois</option>
+        <option value="-1" disabled>Choisissez un mois</option>
         <option value="1">Janvier</option>
         <option value="2">Février</option>
         <option value="3">Mars</option>
@@ -266,7 +93,7 @@
 
     <label for="levelDropDown">Niveau:</label>
     <select class="form-select" id="levelDropDown" name="niveau">
-        <option selected disabled value="0">Choisissez un niveau</option>
+        <option selected disabled value="-1">Choisissez un niveau</option>
         <option value="junior">Junior</option>
         <option value="medior">Médior</option>
         <option value="senior">Senior</option>
@@ -282,7 +109,6 @@
 <body>
 
 <div id="workedDaysList">
-    <h2>Récapitulatif</h2>
 </div>
 
 <div id="recapDiv">
@@ -294,17 +120,14 @@
         Imprimer le total
     </button>
 
-    <button id="printPDFButtonFull" class="btn btn-outline-secondary">
-        Imprimer le détails
-    </button>
 </div>
 
 <div id="printSpace">
-    <span class="container"><img src="../images/logo_logiscool.png" class="payLogiscoolLogo"></img></span>
+    <span class="container"><img src="logo_logiscool.png" class="payLogiscoolLogo"></span>
     <div class="centered" id="defraiementTitre">FICHE DE DÉFRAIEMENT - VOLONTARIAT</div>
-    <div class="centered" id="defraiementMois">MOIS DE : <span id="defraiementMonthName"></span></div>
-    <div class="defraiementMarginLeft">Nom et prénom du volontaire :<input type="text"> </div>
-    <div class="defraiementMarginLeft">Compte bancaire n° : <input type="text"></div>
+    <div class="centered" id="defraiementMois">MOIS DE : <span id="defraiementMonthName" ></span></div>
+    <div class="defraiementMarginLeft">Nom et prénom du volontaire :<input type="text" class="invalid" id="defraiementInputName"> </div>
+    <div class="defraiementMarginLeft">Compte bancaire n° : <input type="text" class="invalid" id="defraiementInputBnk"></div>
 
     <div id="defraiementPayGrid" class="defraiementMarginLeft">
 
@@ -313,17 +136,32 @@
     <div class="defraimentSignSpace">
     <div class="">Date et signature:</div>
     <div class="" id="defraiementSignatureDate">06-04-2023</div>
-    <div class="" id="signature-pad">
-        <canvas id="signCanvas"></canvas>
+    <div class="" id="signature-pad" >
+        <canvas id="signCanvas" class="invalid">
+
+        </canvas>
     </div>
-    <button id="clear-btn">Clear</button>
-    <button id="save-btn">Save</button>
+    <button id="clear-btn" class="btn btn-warning">Reset</button>
+    </div>
+
+    <div id="defraiementFooter">
+        Code It Bryan ! asbl<br>
+        RPM : BE0770.479.710<br>
+        Banque : BE02 1431 1606 4140<br>
+        Rampe Sainte Waudru 8 – 7000 MONS<br>
     </div>
 
 </div>
 
 </body>
 <script>
+
+
+
+
+    addRequiredMechanism(document.getElementById("defraiementInputName"))
+    addRequiredMechanism(document.getElementById("defraiementInputBnk"))
+    addRequiredMechanism(document.getElementById("signCanvas"))
 
     function recapDivText()
     {
@@ -332,27 +170,18 @@
         recapDivToAppend.innerText = ""
         recapDiv = document.createElement("div");
         recapDiv.classList.add("recapDiv")
-        recapDiv.innerText = "Heures d'Accueil : " + stats.accueil + " Nombre de Cours : " + stats.cours + " Nombre de Preparations : " + stats.preparations + " Défraiement total : " + stats.total + "€"
+        recapDiv.innerText = "Heures d'Accueil : " + stats.accueil + " Nombre de Cours : " + stats.cours + " Nombre de Preparations : " + stats.preparations + " Défraiement total : " +stats.total.toFixed(2) + "€"
         recapDivToAppend.append(recapDiv)
     }
 
-    const canvas = document.querySelector('canvas');
+    let canvas = document.querySelector('canvas');
     const signaturePad = new SignaturePad(canvas);
     const clearButton = document.getElementById('clear-btn');
-    const saveButton = document.getElementById('save-btn');
+
 
     clearButton.addEventListener('click', () => {
         signaturePad.clear();
-    });
-
-    saveButton.addEventListener('click', () => {
-        if (signaturePad.isEmpty()) {
-            alert('Please provide a signature first.');
-        } else {
-            const signatureData = signaturePad.toDataURL();
-            // Do something with the signature data, such as send it to a server or save it to local storage.
-            console.log(signatureData);
-        }
+        updateCanvasClass()
     });
 
 
@@ -362,8 +191,103 @@
             printDivAsPdf()
         })
 
+    //Handling calendar display
+    let levelInput = false;
+    let functionInput = false;
+
+    levelInput = (document.getElementById("levelDropDown").value != -1)
+    functionInput = (document.getElementById("functionDropDown").value != -1)
+
+    document.getElementById("functionDropDown").addEventListener("change", f=>{
+        if(document.getElementById("functionDropDown").value == -1)
+        {
+            functionInput = false;
+        }
+        else
+        {
+            functionInput = true;
+        }
+        checkCalendarDisplay();
+    })
+
+    document.getElementById("levelDropDown").addEventListener("change", f=>{
+        if( document.getElementById("levelDropDown").value == -1)
+        {
+            levelInput = false;
+        }
+        else
+        {
+            levelInput = true;
+        }
+
+        checkCalendarDisplay();
+
+    })
 
 
+
+    function checkCalendarDisplay()
+    {
+        console.log(functionInput +" "+ levelInput)
+
+        if(levelInput && functionInput)
+        {
+            document.getElementById("calendar").style.display = "block";
+        }
+        else{
+            document.getElementById("calendar").style.display = "none";
+        }
+    }
+
+    checkCalendarDisplay()
+
+
+    function addRequiredMechanism(node)
+    {
+        node.addEventListener("change",f=>{
+
+            if(node.value == "")
+            {
+                node.classList.add("invalid")
+            }
+            else
+            {
+                node.classList.remove("invalid")
+            }
+        })
+    }
+
+    //
+    canvas = document.getElementById("signCanvas");
+    const className = "invalid";
+
+    // Check if the canvas is empty
+    function isCanvasEmpty() {
+        const context = canvas.getContext("2d");
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
+
+        for (let i = 0; i < imageData.length; i += 4) {
+            if (imageData[i] !== 0 || imageData[i + 1] !== 0 || imageData[i + 2] !== 0 || imageData[i + 3] !== 0) {
+                return false; // Canvas is not empty
+            }
+        }
+
+        return true; // Canvas is empty
+    }
+
+    // Add or remove the "invalid" class based on canvas content
+    function updateCanvasClass() {
+        if (isCanvasEmpty()) {
+            canvas.classList.add(className); // Add the "invalid" class
+        } else {
+            canvas.classList.remove(className); // Remove the "invalid" class
+        }
+    }
+
+    // Listen to canvas events to trigger class update
+    canvas.addEventListener("mouseup", updateCanvasClass);
+    canvas.addEventListener("touchend", updateCanvasClass);
+    //
 
 
 </script>

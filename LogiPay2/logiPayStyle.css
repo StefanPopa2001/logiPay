@@ -2,8 +2,8 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    border: black 1px solid;
-  }
+
+}
 
 body{
     width: 99vw;
@@ -57,13 +57,22 @@ body{
     text-align: center;
 }
 
+td{
+    text-align: center;
+}
+th{
+    text-align: center;
+}
+tr{
+    text-align: center;
+}
 
 #printSpace
 {
     max-width: 90%;
     margin-left: 5%;
     width: 8.27in;
-    height: 11.69in;
+    min-height: 11.69in;
 }
 
 .calendarDayHeader{
@@ -152,14 +161,20 @@ body{
 
 .A4 {
 
-    background-color: green;
+    background-color: white;
 
 }
 
 .container{
-    border: black solid 1px;
     margin: auto;
     display: flex;
+}
+
+#printSpace{
+    margin-left: 33%;
+    margin-right: 33%;
+    margin-top: 2%;
+
 }
 
 .payLogiscoolLogo{
@@ -184,7 +199,7 @@ body{
 }
 
 .defraiementMarginLeft{
-margin-left: 30px;
+    margin-left: 30px;
     margin-top: 10px;
     align-content: center;
 }
@@ -209,4 +224,10 @@ margin-left: 30px;
 .invalid
 {
     border: red 5px dashed;
+}
+
+#defraiementFooter{
+    text-align: center;
+    font-style: italic;
+    font-size: 1rem;
 }
